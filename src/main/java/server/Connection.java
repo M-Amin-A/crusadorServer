@@ -1,10 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import model.DataBase;
-import model.GameData;
-import model.Lobby;
-import model.User;
+import model.*;
 import model.map.MapTemplate;
 
 import java.io.DataInputStream;
@@ -115,6 +112,9 @@ public class Connection extends Thread{
         else if((matcher=Commands.GET_MAP_BY_NAME.getMatcher(input))!=null){
             getMapByName(matcher);
         }
+
+        SaveAndLoad.saveData(DataBase.getUsers(), DataBase.getUsersDataBaseFilePath());
+        SaveAndLoad.saveData(DataBase.getMaps(), DataBase.getMapsDataBaseFilePath());
 
         return false;
     }

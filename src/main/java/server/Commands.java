@@ -26,18 +26,18 @@ public enum Commands {
     GET_NUMBER("get number of players"),
     IS_LOBBY_VALID("is lobby valid"),
     LOBBY_REQUEST("lobby request"),
-    START_GAME("START_GAME ( (<?playerUsername>\\S+))*\\s*"),
+    START_GAME("START_GAME ( (?<playerUsername>\\S+))*\\s*"),
 
     //chat commands
 
 
     //in game commands
-    NEXT_TURN("NEXT_TURN (<?gameId>\\S+) (<?gameData>.*)"),
+    NEXT_TURN("NEXT_TURN (?<gameId>\\S+) (?<gameData>.*)"),
 
     //edit map menu
-    GET_MAPS("GET_MAPS"),
-    GET_MAP_BY_NAME("GET_MAP_BY_NAME (<?name>.*)"),
-    ADD_MAP("ADD_MAP (<?mapJson>.*)");
+    GET_MAPS("GET_PUBLIC_MAPS"),
+    GET_MAP_BY_NAME("GET_PUBLIC_MAP_BY_NAME (?<name>.*)"),
+    ADD_MAP("ADD_MAP (?<mapJson>.*)");
     private final String regex;
     private Commands(String regex){
         this.regex=regex;

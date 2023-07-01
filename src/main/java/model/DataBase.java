@@ -4,6 +4,7 @@ import model.map.MapTemplate;
 import server.Connection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class DataBase {
@@ -16,6 +17,14 @@ public class DataBase {
     private static ArrayList<User> users=new ArrayList<>();
 
     public static synchronized void initializeDataBase() {
+        User[] loadingUsers=SaveAndLoad.loadArrayData(usersDataBaseFilePath,User[].class);
+        if (loadingUsers != null) {
+            users.addAll(Arrays.asList(loadingUsers));
+        }
+        MapTemplate[] loadingMapTemplate=SaveAndLoad.loadArrayData(mapsDataBaseFilePath,MapTemplate[].class);
+        if (loadingMapTemplate != null) {
+            publicMapTemplates.addAll(Arrays.asList(loadingMapTemplate));
+        }
     }
     public static synchronized User getUserByUsername(String username) {
         for (int i = 0; i < users.size(); i++) {
@@ -37,7 +46,7 @@ public class DataBase {
 
     public static synchronized void addUser(User user) {
         users.add(user);
-        SaveAndLoad.saveData(user, usersDataBaseFilePath);
+        SaveAndLoad.saveData(users, usersDataBaseFilePath);
     }
     public static ArrayList<User> sortUserByHighScore() {
         ArrayList<User> sortedUsers = new ArrayList<>();
