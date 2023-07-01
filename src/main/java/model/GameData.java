@@ -42,7 +42,7 @@ public class GameData {
         this.gameID = gameID;
     }
 
-    public void sendToPlayers(String message) throws IOException {
+    public void sendToPlayers(String message) {
         for(String username:playerUsernames){
             Connection connection=DataBase.getConnections().get(username);
             connection.writeOnSocket(message);

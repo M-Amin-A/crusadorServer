@@ -1,5 +1,6 @@
 package model;
 
+import model.map.MapTemplate;
 import server.Connection;
 
 import java.util.ArrayList;
@@ -11,15 +12,16 @@ public class DataBase {
     private static final HashMap<String, Connection> connections=new HashMap<>();
     private static HashMap<String, Lobby> activeLobbies;
     private static HashMap<String, GameData> activeGames;
+    private static final HashMap<String, MapTemplate> publicMapTemplates=new HashMap<>();
     private static ArrayList<User> users;
 
-    public static void initializeDataBase() {
+    public static synchronized void initializeDataBase() {
         //todo get from json file
     }
 
-    //        SaveAndLoad.saveData(AppData.getUsers(), AppData.getUsersDataBaseFilePath());
+    //todo save data of data base        SaveAndLoad.saveData(AppData.getUsers(), AppData.getUsersDataBaseFilePath());
 
-    public static User getUserByUsername(String username) {
+    public static synchronized User getUserByUsername(String username) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getUsername().equals(username)) {
                 return users.get(i);
@@ -28,7 +30,7 @@ public class DataBase {
         return null;
     }
 
-    public static User getUserByEmail(String email) {
+    public static synchronized User getUserByEmail(String email) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getEmail().equalsIgnoreCase(email)) {
                 return users.get(i);
@@ -37,7 +39,7 @@ public class DataBase {
         return null;
     }
 
-    public static void addUser(User user) {
+    public static synchronized void addUser(User user) {
         users.add(user);
     }
     public static ArrayList<User> sortUserByHighScore() {
@@ -55,7 +57,7 @@ public class DataBase {
         return sortedUsers;
     }
 
-    public static int rankOfUser(ArrayList<User> sortedUsers, String username) {
+    public static synchronized int rankOfUser(ArrayList<User> sortedUsers, String username) {
         for (int i = 0; i < sortedUsers.size(); i++) {
             if (sortedUsers.get(i).getUsername().equals(username)) {
                 return i + 1;
@@ -64,35 +66,47 @@ public class DataBase {
         return 0;
     }
 
-    public static HashMap<String, Lobby> getActiveLobbies() {
+    public static synchronized HashMap<String, Lobby> getActiveLobbies() {
         return activeLobbies;
     }
 
-    public static void setActiveLobbies(HashMap<String, Lobby> activeLobbies) {
+    public static synchronized void setActiveLobbies(HashMap<String, Lobby> activeLobbies) {
         DataBase.activeLobbies = activeLobbies;
     }
 
-    public static HashMap<String, GameData> getActiveGames() {
+    public static synchronized HashMap<String, GameData> getActiveGames() {
         return activeGames;
     }
 
-    public static void setActiveGames(HashMap<String, GameData> activeGames) {
+    public static synchronized void setActiveGames(HashMap<String, GameData> activeGames) {
         DataBase.activeGames = activeGames;
     }
 
-    public static ArrayList<User> getUsers() {
+    public static synchronized ArrayList<User> getUsers() {
         return users;
     }
 
-    public static void setUsers(ArrayList<User> users) {
+    public static synchronized void setUsers(ArrayList<User> users) {
         DataBase.users = users;
     }
 
-    public static String getUsersDataBaseFilePath() {
+    public static synchronized String getUsersDataBaseFilePath() {
         return usersDataBaseFilePath;
     }
 
-    public static HashMap<String, Connection> getConnections() {
+    public static synchronized HashMap<String, Connection> getConnections() {
         return connections;
+    }
+
+    public static MapTemplate getMapByName(String name) {
+        return publicMapTemplates.get(name);
+    }
+
+    public static ArrayList<MapTemplate> getMaps(){
+        ArrayList<MapTemplate> mapTemplate=new ArrayList<>();
+        for(MapTemplate template: publicMapTemplates.values())
+            mapTemplate.add(template);
+
+        return mapTemplate;
     }
 }

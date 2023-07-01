@@ -9,6 +9,7 @@ public class User {
     public String email;
     //recovery question
     public String slogan;
+    public String avatar;
     public int highScore = 0;
     public int stayLoggedIn = 0;
 
@@ -65,6 +66,10 @@ public class User {
         return securityQuestion;
     }
 
+    public void setSecurityQuestion(String securityQuestion) {
+        this.securityQuestion = securityQuestion;
+    }
+
     public int getHighScore() {
         return highScore;
     }
@@ -89,7 +94,11 @@ public class User {
         this.stayLoggedIn = stayLoggedIn;
     }
 
-    public void setSecurityQuestion(String securityQuestion) {
-        this.securityQuestion = securityQuestion;
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

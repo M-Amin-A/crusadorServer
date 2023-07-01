@@ -16,12 +16,17 @@ public enum Commands {
 
     //lobby commands
     LOBBY_REQUEST("LOBBY_REQUEST"),
-    START_GAME("START_GAME PLAYERS( (<?playerUsername>\\S+))*\\s*")
+    START_GAME("START_GAME ( (<?playerUsername>\\S+))*\\s*"),
 
     //chat commands
 
 
     //in game commands
+    NEXT_TURN("NEXT_TURN (<?gameId>\\S+) (<?gameData>.*)"),
+
+    //edit map menu
+    GET_MAPS("GET_MAPS"),
+    GET_MAP_BY_NAME("GET_MAP_BY_NAME (<?name>.*)"),
     ;
     private final String regex;
     private Commands(String regex){
