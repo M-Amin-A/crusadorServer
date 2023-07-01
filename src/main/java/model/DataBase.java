@@ -5,15 +5,14 @@ import server.Connection;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 public class DataBase {
     private static final String usersDataBaseFilePath = DataBase.class.getResource("/usersDataBase.json").toString();
     private static final String mapsDataBaseFilePath = DataBase.class.getResource("/mapsDataBase.json").toString();
-    private static final HashMap<String, Connection> connections=new HashMap<>();
+    private static final ArrayList<Connection> connections=new ArrayList<>();
     private static ArrayList<Lobby> activeLobbies=new ArrayList<>();
-    private static HashMap<String, GameData> activeGames=new HashMap<>();
-    private static final HashMap<String, MapTemplate> publicMapTemplates=new HashMap<>();
+    private static ArrayList<GameData> activeGames=new ArrayList<>();
+    private static final ArrayList<MapTemplate> publicMapTemplates=new ArrayList<>();
     private static ArrayList<User> users=new ArrayList<>();
 
     public static synchronized void initializeDataBase() {
@@ -73,11 +72,11 @@ public class DataBase {
         DataBase.activeLobbies = activeLobbies;
     }
 
-    public static synchronized HashMap<String, GameData> getActiveGames() {
+    public static synchronized ArrayList<GameData> getActiveGames() {
         return activeGames;
     }
 
-    public static synchronized void setActiveGames(HashMap<String, GameData> activeGames) {
+    public static synchronized void setActiveGames(ArrayList<GameData> activeGames) {
         DataBase.activeGames = activeGames;
     }
 
@@ -93,17 +92,20 @@ public class DataBase {
         return usersDataBaseFilePath;
     }
 
-    public static synchronized HashMap<String, Connection> getConnections() {
+    public static synchronized ArrayList<Connection> getConnections() {
         return connections;
     }
 
     public static MapTemplate getMapByName(String name) {
-        return publicMapTemplates.get(name);
+        for (MapTemplate mapTemplate : publicMapTemplates) {
+            if (mapTemplate.getName().equals(name)) return mapTemplate;
+        }
+        return null;
     }
 
     public static ArrayList<MapTemplate> getMaps(){
         ArrayList<MapTemplate> mapTemplate=new ArrayList<>();
-        for(MapTemplate template: publicMapTemplates.values())
+        for(MapTemplate template: publicMapTemplates)
             mapTemplate.add(template);
 
         return mapTemplate;
@@ -111,5 +113,24 @@ public class DataBase {
 
     public static String getMapsDataBaseFilePath() {
         return mapsDataBaseFilePath;
+    }
+
+    public static void addMapTemplate(MapTemplate mapTemplate) {
+        publicMapTemplates.add(mapTemplate);
+        SaveAndLoad.saveData(publicMapTemplates, usersDataBaseFilePath);
+    }
+
+    public static Connection getConnectionByUserName(String username) {
+        for (Connection connection : connections) {
+            if (connection.getClientUsername().equals(username)) return connection;
+        }
+        return null;
+    }
+
+    public static GameData getGameDataById(String id) {
+        for (GameData gameData : getActiveGames()) {
+            if (gameData.getGameID().equals(id)) return gameData;
+        }
+        return null;
     }
 }

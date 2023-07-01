@@ -1,7 +1,6 @@
 package server;
 
 import model.DataBase;
-import model.GameData;
 import model.Lobby;
 import model.User;
 

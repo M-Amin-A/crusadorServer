@@ -37,7 +37,7 @@ public enum Commands {
     //edit map menu
     GET_MAPS("GET_MAPS"),
     GET_MAP_BY_NAME("GET_MAP_BY_NAME (<?name>.*)"),
-    ;
+    ADD_MAP("ADD_MAP (<?mapJson>.*)");
     private final String regex;
     private Commands(String regex){
         this.regex=regex;

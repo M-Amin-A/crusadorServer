@@ -1,7 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-import javafx.css.Match;
 import model.DataBase;
 import model.GameData;
 import model.Lobby;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 public class Connection extends Thread{
@@ -31,6 +29,10 @@ public class Connection extends Thread{
         this.serverSocket = serverSocket;
         dataInputStream=new DataInputStream(socket.getInputStream());
         dataOutputStream=new DataOutputStream(socket.getOutputStream());
+    }
+
+    public String getClientUsername() {
+        return clientUsername;
     }
 
     @Override
@@ -103,7 +105,7 @@ public class Connection extends Thread{
         } else if (Commands.IS_LOBBY_VALID.getMatcher(input) != null) {
             isLobbyValid();
         }
-
+        //todo where is start game??
 
 
         //in game commands
@@ -114,12 +116,27 @@ public class Connection extends Thread{
         else if((matcher=Commands.GET_MAPS.getMatcher(input))!=null){
             getMaps();
         }
+        else if((matcher=Commands.ADD_MAP.getMatcher(input))!=null){
+            addMaps(matcher);
+        }
         else if((matcher=Commands.GET_MAP_BY_NAME.getMatcher(input))!=null){
             getMapByName(matcher);
         }
 
         return false;
     }
+
+    private void addMaps(Matcher matcher) {
+        String mapJson=matcher.group("mapJson");
+        MapTemplate mapTemplate;
+        try {
+            mapTemplate = (MapTemplate) getObjectFromJson(MapTemplate.class, mapJson);
+        }catch (Exception e){
+            return;
+        }
+        DataBase.addMapTemplate(mapTemplate);
+    }
+
     private void isLobbyValid() throws IOException {
         User user = DataBase.getUserByUsername(clientUsername);
         boolean isValid = (user.getLobby() != null);
@@ -229,7 +246,7 @@ public class Connection extends Thread{
             e.printStackTrace();
             return;
         }
-        GameData serverGameData=DataBase.getActiveGames().get(gameId);
+        GameData serverGameData=DataBase.getGameDataById(gameId);
         serverGameData.sendToPlayers(clientGameData);
     }
 
@@ -287,7 +304,7 @@ public class Connection extends Thread{
     private void validateConnection(String clientUsername){
         this.clientUsername =clientUsername;
 
-        DataBase.getConnections().put(clientUsername,this);
+        DataBase.getConnections().add(this);
     }
 
     public void writeOnSocket(String message) {

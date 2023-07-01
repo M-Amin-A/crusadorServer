@@ -2,7 +2,6 @@ package model;
 
 import server.Connection;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -18,11 +17,11 @@ public class GameData {
         Random random=new Random();
         do {
             id=""+random.nextInt()%1000000;
-        }while(DataBase.getActiveGames().containsKey(id));
+        }while(DataBase.getGameDataById(id) != null);
 
         gameData.setGameID(id);
 
-        DataBase.getActiveGames().put(id,gameData);
+        DataBase.getActiveGames().add(gameData);
         return gameData;
     }
 
@@ -44,7 +43,7 @@ public class GameData {
 
     public void sendToPlayers(String message) {
         for(String username:playerUsernames){
-            Connection connection=DataBase.getConnections().get(username);
+            Connection connection=DataBase.getConnectionByUserName(username);
             connection.writeOnSocket(message);
         }
     }
