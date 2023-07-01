@@ -20,6 +20,8 @@ public class Server {
 
         while (true){
             Socket socket=serverSocket.accept();
+            Connection connection=new Connection(socket,serverSocket);
+            connection.start();
         }
     }
 

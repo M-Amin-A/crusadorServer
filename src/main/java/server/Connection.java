@@ -26,6 +26,7 @@ public class Connection extends Thread{
     private String clientUsername =null;
 
     public Connection(Socket socket, ServerSocket serverSocket) throws IOException {
+        System.out.println("new connection on port: "+socket.getPort());
         this.socket = socket;
         this.serverSocket = serverSocket;
         dataInputStream=new DataInputStream(socket.getInputStream());
@@ -38,9 +39,12 @@ public class Connection extends Thread{
             try {
                 if(dataInputStream.available()!=0){
                     String input=dataInputStream.readUTF();
-                    System.out.println(input);  //todo may be deleted later
-
                     boolean terminate=inputHandler(input);
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -53,7 +57,10 @@ public class Connection extends Thread{
 
         System.out.println("received from port "+socket.getPort()+" : "+input);
         //initial commands
-        if((matcher=Commands.GET_USER_BY_USERNAME.getMatcher(input))!=null){
+        if((matcher=Commands.LOGIN.getMatcher(input))!=null){
+            validateConnection(matcher.group("username"));
+        }
+        else if((matcher=Commands.GET_USER_BY_USERNAME.getMatcher(input))!=null){
             getUserByUsername(matcher);
         }
         else if((matcher=Commands.GET_USER_BY_EMAIL.getMatcher(input))!=null){
@@ -227,9 +234,12 @@ public class Connection extends Thread{
     }
 
     private void getUserByUsername(Matcher matcher){
+        System.out.println(2);
         String username=matcher.group("username").trim();
+        System.out.println(3);
         User user= DataBase.getUserByUsername(username);
 
+        System.out.println(1);
         writeOnSocket(new Gson().toJson(user));
     }
     private void getUserByEmail(Matcher matcher){

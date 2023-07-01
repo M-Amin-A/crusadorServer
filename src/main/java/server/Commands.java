@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public enum Commands {
 
     //initial commands
+    LOGIN("LOGIN (<?username>.*)"),
     GET_USER_BY_USERNAME("GET_USER_BY_USERNAME (<?username>.*)"),
     GET_USER_BY_EMAIL("GET_USER_BY_EMAIL (<?email>.*)"),
     SORT_USERS_BY_HIGH_SCORE("SORT_USERS_BY_HIGH_SCORE"),
