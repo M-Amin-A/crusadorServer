@@ -39,15 +39,8 @@ public class Connection extends Thread{
     public void run(){
         while (true){
             try {
-                if(dataInputStream.available()!=0){
-                    String input=dataInputStream.readUTF();
-                    boolean terminate=inputHandler(input);
-                }
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                String input=dataInputStream.readUTF();
+                boolean terminate=inputHandler(input);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -251,12 +244,9 @@ public class Connection extends Thread{
     }
 
     private void getUserByUsername(Matcher matcher){
-        System.out.println(2);
         String username=matcher.group("username").trim();
-        System.out.println(3);
         User user= DataBase.getUserByUsername(username);
 
-        System.out.println(1);
         writeOnSocket(new Gson().toJson(user));
     }
     private void getUserByEmail(Matcher matcher){

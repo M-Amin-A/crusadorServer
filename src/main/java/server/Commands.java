@@ -6,14 +6,14 @@ import java.util.regex.Pattern;
 public enum Commands {
 
     //initial commands
-    LOGIN("LOGIN (<?username>.*)"),
-    GET_USER_BY_USERNAME("GET_USER_BY_USERNAME (<?username>.*)"),
-    GET_USER_BY_EMAIL("GET_USER_BY_EMAIL (<?email>.*)"),
+    LOGIN("LOGIN (?<username>.*)"),
+    GET_USER_BY_USERNAME("GET_USER_BY_USERNAME (?<username>.*)"),
+    GET_USER_BY_EMAIL("GET_USER_BY_EMAIL (?<email>.*)"),
     SORT_USERS_BY_HIGH_SCORE("SORT_USERS_BY_HIGH_SCORE"),
-    RANK_OF_USER("RANK_OF_USER (<?username>.*)"),
+    RANK_OF_USER("RANK_OF_USER (?<username>.*)"),
     GET_USERS("GET_USERS"),
-    ADD_USER("ADD_USER (<?userJson>.*)"),
-    CHANGE_USER_DATA("CHANGE_USER_DATA (<?userJson>.*)"),
+    ADD_USER("ADD_USER (?<userJson>.*)"),
+    CHANGE_USER_DATA("CHANGE_USER_DATA (?<userJson>.*)"),
 
     //lobby commands
     NEW_LOBBY("new lobby (?<number>\\d+)"),

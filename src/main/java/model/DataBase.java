@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class DataBase {
-    private static final String usersDataBaseFilePath = DataBase.class.getResource("/usersDataBase.json").toString();
-    private static final String mapsDataBaseFilePath = DataBase.class.getResource("/mapsDataBase.json").toString();
+    private static final String usersDataBaseFilePath = "src/main/resources/usersDataBase.json";
+    private static final String mapsDataBaseFilePath = "src/main/resources/mapsDataBase.json";
     private static final ArrayList<Connection> connections=new ArrayList<>();
     private static ArrayList<Lobby> activeLobbies=new ArrayList<>();
     private static ArrayList<GameData> activeGames=new ArrayList<>();
@@ -16,7 +16,6 @@ public class DataBase {
     private static ArrayList<User> users=new ArrayList<>();
 
     public static synchronized void initializeDataBase() {
-
     }
     public static synchronized User getUserByUsername(String username) {
         for (int i = 0; i < users.size(); i++) {
