@@ -12,6 +12,7 @@ public class User {
     public String avatar;
     public int highScore = 0;
     public int stayLoggedIn = 0;
+    public Lobby lobby;
 
     public User(String username, String password, String nickname, String email, String slogan, String securityQuestion) {
         this.username = username;
@@ -100,5 +101,13 @@ public class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public Lobby getLobby() {
+        return lobby;
+    }
+
+    public void setLobby(Lobby lobby) {
+        this.lobby = lobby;
     }
 }

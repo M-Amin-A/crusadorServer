@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import javafx.css.Match;
 import model.DataBase;
 import model.GameData;
+import model.Lobby;
 import model.User;
 import model.map.MapTemplate;
 
@@ -47,7 +48,7 @@ public class Connection extends Thread{
         }
     }
 
-    private Boolean inputHandler(String input){
+    private Boolean inputHandler(String input) throws IOException {
         Matcher matcher;
 
         System.out.println("received from port "+socket.getPort()+" : "+input);
@@ -76,11 +77,24 @@ public class Connection extends Thread{
 
 
         //lobby commands
-        else if((matcher=Commands.LOBBY_REQUEST.getMatcher(input))!=null){
-
-        }
-        else if((matcher=Commands.START_GAME.getMatcher(input))!=null){
-            startGame(matcher);
+        else if ((matcher = Commands.NEW_LOBBY.getMatcher(input)) != null) {
+            newLobby(matcher);
+        } else if ((matcher = Commands.JOIN_LOBBY.getMatcher(input)) != null) {
+            joinLobby(matcher);
+        } else if (Commands.LEFT_LOBBY.getMatcher(input) != null) {
+            leftLobby();
+        } else if ((matcher = Commands.GET_USERNAMES.getMatcher(input)) != null) {
+            sendUsernames(matcher);
+        } else if (Commands.GET_LOBBIES.getMatcher(input) != null) {
+            sendLobbyNames();
+        } else if (Commands.IS_ADMIN.getMatcher(input) != null) {
+            isAdmin();
+        } else if (Commands.CHANGE_LOBBY_ACCESS.getMatcher(input) != null) {
+            changeLobbyAccess();
+        } else if (Commands.GET_NUMBER.getMatcher(input) != null) {
+            sendNumberOfPlayers();
+        } else if (Commands.IS_LOBBY_VALID.getMatcher(input) != null) {
+            isLobbyValid();
         }
 
 
@@ -99,18 +113,94 @@ public class Connection extends Thread{
 
         return false;
     }
+    private void isLobbyValid() throws IOException {
+        User user = DataBase.getUserByUsername(clientUsername);
+        boolean isValid = (user.getLobby() != null);
+        dataOutputStream.writeBoolean(isValid);
+    }
+    private void sendNumberOfPlayers() throws IOException {
+        User user = DataBase.getUserByUsername(clientUsername);
+        dataOutputStream.writeInt(user.getLobby().getUsers().size());
+    }
 
-    private void startGame(Matcher matcher){
-        String[] usernames=new String[matcher.groupCount()];
-        for(int i=1;i<=matcher.groupCount();i++){
-            try {
-                usernames[i] = matcher.group(i);
-            }catch (Exception e){
-                e.printStackTrace();
-                return;
+    private void changeLobbyAccess() {
+        User user = DataBase.getUserByUsername(clientUsername);
+        Lobby lobby = user.getLobby();
+        lobby.setPublic(!lobby.isPublic());
+    }
+
+    private void isAdmin() throws IOException {
+        User user = DataBase.getUserByUsername(clientUsername);
+        boolean isAdmin = user.getLobby().getAdmin().equals(user);
+        dataOutputStream.writeBoolean(isAdmin);
+    }
+
+    private void sendLobbyNames() throws IOException {
+        dataOutputStream.writeInt(getPublicSize(DataBase.getActiveLobbies()));
+        for (Lobby lobby : DataBase.getActiveLobbies()) {
+            if (!lobby.isPublic()) continue;
+            dataOutputStream.writeUTF(lobby.getName());
+            dataOutputStream.writeInt(lobby.getCapacity());
+            String users = "";
+            for (User user : lobby.getUsers()) {
+                users += user.getNickname() + ",";
             }
+            dataOutputStream.writeUTF(users);
         }
+    }
 
+    private int getPublicSize(ArrayList<Lobby> lobbies) {
+        int counter = 0;
+        for (Lobby lobby : lobbies) {
+            if (lobby.isPublic()) counter++;
+        }
+        return counter;
+    }
+
+    private void sendUsernames(Matcher matcher) throws IOException {
+        String lobbyName = matcher.group("lobbyName");
+        Lobby lobby = Server.getLobbyByName(lobbyName);
+        dataOutputStream.writeInt(lobby.getUsers().size());
+        for (User user1 : lobby.getUsers()) {
+            dataOutputStream.writeUTF(user1.getNickname());
+        }
+    }
+
+    private void leftLobby() {
+        User user = DataBase.getUserByUsername(clientUsername);
+        Lobby lobby = user.getLobby();
+        lobby.remove(user);
+        if (lobby.getUsers().size() == 0) DataBase.getActiveLobbies().remove(lobby);
+    }
+
+    private void joinLobby(Matcher matcher) throws IOException {
+        User user = DataBase.getUserByUsername(clientUsername);
+        String lobbyName = matcher.group("name");
+        Lobby lobby = Server.getLobbyByName(lobbyName);
+        if (lobby != null) {
+            lobby.addUser(user);
+            dataOutputStream.writeUTF(lobby.getName());
+        }
+        else dataOutputStream.writeUTF("null");
+        if (lobby.getCapacity() <= lobby.getUsers().size()) {
+            ArrayList<String> usernames=new ArrayList<>();
+            for(User user1:lobby.getUsers())
+                usernames.add(user1.username);
+            startGame(usernames);
+        }
+    }
+
+    private void newLobby(Matcher matcher) throws IOException {
+        User user = DataBase.getUserByUsername(clientUsername);
+        int capacity = Integer.parseInt(matcher.group("number"));
+        Lobby lobby = new Lobby(user, capacity);
+        DataBase.getActiveLobbies().add(lobby);
+        dataOutputStream.writeUTF(lobby.getName());
+    }
+
+    private void startGame(ArrayList<String> usernames){
+        GameData gameData=GameData.GenerateGameData(usernames);
+        writeOnSocket(""+gameData.getGameID());
     }
 
     private void getMaps(){

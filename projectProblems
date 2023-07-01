@@ -1,4 +1,3 @@
-save and load data of class data base
 save and load data of class AppData
 
 create game with template
@@ -6,7 +5,7 @@ create game with template
 complete client receive cmd and regex
 
 complete map editor
+initialize database
+hashmaps in database
 
 what to do if game finished
-lobby network
-complete server receive cmd and regex

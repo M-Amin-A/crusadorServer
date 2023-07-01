@@ -15,7 +15,16 @@ public enum Commands {
     CHANGE_USER_DATA("CHANGE_USER_DATA (<?userJson>.*)"),
 
     //lobby commands
-    LOBBY_REQUEST("LOBBY_REQUEST"),
+    NEW_LOBBY("new lobby (?<number>\\d+)"),
+    JOIN_LOBBY("join (?<name>\\S+)"),
+    LEFT_LOBBY("left lobby"),
+    GET_USERNAMES("get usernames (?<lobbyName>\\S+)"),
+    GET_LOBBIES("get lobbies"),
+    IS_ADMIN("is admin"),
+    CHANGE_LOBBY_ACCESS("change lobby access"),
+    GET_NUMBER("get number of players"),
+    IS_LOBBY_VALID("is lobby valid"),
+    LOBBY_REQUEST("lobby request"),
     START_GAME("START_GAME ( (<?playerUsername>\\S+))*\\s*"),
 
     //chat commands

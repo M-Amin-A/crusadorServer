@@ -8,19 +8,17 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class DataBase {
-    private static final String usersDataBaseFilePath = "./src/main/dataFiles/UsersDataBase.json";
+    private static final String usersDataBaseFilePath = DataBase.class.getResource("/usersDataBase.json").toString();
+    private static final String mapsDataBaseFilePath = DataBase.class.getResource("/mapsDataBase.json").toString();
     private static final HashMap<String, Connection> connections=new HashMap<>();
-    private static HashMap<String, Lobby> activeLobbies;
-    private static HashMap<String, GameData> activeGames;
+    private static ArrayList<Lobby> activeLobbies=new ArrayList<>();
+    private static HashMap<String, GameData> activeGames=new HashMap<>();
     private static final HashMap<String, MapTemplate> publicMapTemplates=new HashMap<>();
-    private static ArrayList<User> users;
+    private static ArrayList<User> users=new ArrayList<>();
 
     public static synchronized void initializeDataBase() {
-        //todo get from json file
+
     }
-
-    //todo save data of data base        SaveAndLoad.saveData(AppData.getUsers(), AppData.getUsersDataBaseFilePath());
-
     public static synchronized User getUserByUsername(String username) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getUsername().equals(username)) {
@@ -41,6 +39,7 @@ public class DataBase {
 
     public static synchronized void addUser(User user) {
         users.add(user);
+        SaveAndLoad.saveData(user, usersDataBaseFilePath);
     }
     public static ArrayList<User> sortUserByHighScore() {
         ArrayList<User> sortedUsers = new ArrayList<>();
@@ -66,11 +65,11 @@ public class DataBase {
         return 0;
     }
 
-    public static synchronized HashMap<String, Lobby> getActiveLobbies() {
+    public static synchronized ArrayList<Lobby> getActiveLobbies() {
         return activeLobbies;
     }
 
-    public static synchronized void setActiveLobbies(HashMap<String, Lobby> activeLobbies) {
+    public static synchronized void setActiveLobbies(ArrayList<Lobby> activeLobbies) {
         DataBase.activeLobbies = activeLobbies;
     }
 
@@ -108,5 +107,9 @@ public class DataBase {
             mapTemplate.add(template);
 
         return mapTemplate;
+    }
+
+    public static String getMapsDataBaseFilePath() {
+        return mapsDataBaseFilePath;
     }
 }
