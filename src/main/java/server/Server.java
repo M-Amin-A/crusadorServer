@@ -25,7 +25,7 @@ public class Server {
     }
 
     public static Lobby getLobbyByName(String lobbyName) {
-        for (Lobby lobby : DataBase.getActiveLobbies()) {
+        for (Lobby lobby : DataBase.getActiveLobbies().values()) {
             if (lobby.getName().equals(lobbyName)) return lobby;
         }
         return null;
@@ -34,7 +34,7 @@ public class Server {
     public static void destroy(String lobbyName) {
         Lobby lobby = getLobbyByName(lobbyName);
         for (User user : lobby.getUsers()) {
-            user.setLobby(null);
+            DataBase.getActiveLobbies().put(user,lobby);
         }
         DataBase.getActiveLobbies().remove(lobby);
         //todo خارج شدن از لابی بعد از قطع شدن اتصال

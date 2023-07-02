@@ -6,11 +6,11 @@ import model.map.MapTemplate;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 
 public class Connection extends Thread{
@@ -40,6 +40,7 @@ public class Connection extends Thread{
                 String input=dataInputStream.readUTF();
                 boolean terminate=inputHandler(input);
             } catch (IOException e) {
+                //todo
                 this.interrupt();
             }
         }
@@ -133,29 +134,29 @@ public class Connection extends Thread{
 
     private void isLobbyValid() throws IOException {
         User user = DataBase.getUserByUsername(clientUsername);
-        boolean isValid = (user.getLobby() != null);
+        boolean isValid = (DataBase.getActiveLobbies().get(user) != null);
         dataOutputStream.writeBoolean(isValid);
     }
     private void sendNumberOfPlayers() throws IOException {
         User user = DataBase.getUserByUsername(clientUsername);
-        dataOutputStream.writeInt(user.getLobby().getUsers().size());
+        dataOutputStream.writeInt(DataBase.getActiveLobbies().get(user).getUsers().size());
     }
 
     private void changeLobbyAccess() {
         User user = DataBase.getUserByUsername(clientUsername);
-        Lobby lobby = user.getLobby();
+        Lobby lobby = DataBase.getActiveLobbies().get(user);
         lobby.setPublic(!lobby.isPublic());
     }
 
     private void isAdmin() throws IOException {
         User user = DataBase.getUserByUsername(clientUsername);
-        boolean isAdmin = user.getLobby().getAdmin().equals(user);
+        boolean isAdmin = DataBase.getActiveLobbies().get(user).getAdmin().equals(user);
         dataOutputStream.writeBoolean(isAdmin);
     }
 
     private void sendLobbyNames() throws IOException {
         dataOutputStream.writeInt(getPublicSize(DataBase.getActiveLobbies()));
-        for (Lobby lobby : DataBase.getActiveLobbies()) {
+        for (Lobby lobby : DataBase.getActiveLobbies().values()) {
             if (!lobby.isPublic()) continue;
             dataOutputStream.writeUTF(lobby.getName());
             dataOutputStream.writeInt(lobby.getCapacity());
@@ -167,9 +168,9 @@ public class Connection extends Thread{
         }
     }
 
-    private int getPublicSize(ArrayList<Lobby> lobbies) {
+    private int getPublicSize(HashMap<User, Lobby> lobbies) {
         int counter = 0;
-        for (Lobby lobby : lobbies) {
+        for (Lobby lobby : lobbies.values()) {
             if (lobby.isPublic()) counter++;
         }
         return counter;
@@ -186,7 +187,7 @@ public class Connection extends Thread{
 
     private void leftLobby() {
         User user = DataBase.getUserByUsername(clientUsername);
-        Lobby lobby = user.getLobby();
+        Lobby lobby = DataBase.getActiveLobbies().get(user);
         lobby.remove(user);
         if (lobby.getUsers().size() == 0) DataBase.getActiveLobbies().remove(lobby);
     }
@@ -210,10 +211,9 @@ public class Connection extends Thread{
 
     private void newLobby(Matcher matcher) throws IOException {
         User user = DataBase.getUserByUsername(clientUsername);
-        System.out.println(clientUsername);
         int capacity = Integer.parseInt(matcher.group("number"));
         Lobby lobby = new Lobby(user, capacity);
-        DataBase.getActiveLobbies().add(lobby);
+        DataBase.getActiveLobbies().put(user,lobby);
         dataOutputStream.writeUTF(lobby.getName());
     }
 
@@ -296,7 +296,6 @@ public class Connection extends Thread{
     private void validateConnection(String clientUsername){
         this.clientUsername =clientUsername;
         DataBase.getConnections().add(this);
-        System.out.println(clientUsername);
     }
 
     public void writeOnSocket(String message) {

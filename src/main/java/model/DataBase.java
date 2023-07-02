@@ -6,12 +6,13 @@ import server.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class DataBase {
     private static final String usersDataBaseFilePath = "src/main/resources/usersDataBase.json";
     private static final String mapsDataBaseFilePath = "src/main/resources/mapsDataBase.json";
     private static final ArrayList<Connection> connections=new ArrayList<>();
-    private static ArrayList<Lobby> activeLobbies=new ArrayList<>();
+    private static HashMap<User, Lobby> activeLobbies= new HashMap<>();
     private static ArrayList<GameData> activeGames=new ArrayList<>();
     private static final ArrayList<MapTemplate> publicMapTemplates=new ArrayList<>();
     private static ArrayList<User> users=new ArrayList<>();
@@ -72,11 +73,11 @@ public class DataBase {
         return 0;
     }
 
-    public static synchronized ArrayList<Lobby> getActiveLobbies() {
+    public static synchronized HashMap<User, Lobby> getActiveLobbies() {
         return activeLobbies;
     }
 
-    public static synchronized void setActiveLobbies(ArrayList<Lobby> activeLobbies) {
+    public static synchronized void setActiveLobbies(HashMap<User, Lobby> activeLobbies) {
         DataBase.activeLobbies = activeLobbies;
     }
 

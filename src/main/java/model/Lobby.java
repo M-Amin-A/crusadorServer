@@ -18,7 +18,7 @@ public class Lobby {
     public Lobby(User admin, int capacity) {
         users.add(admin);
         this.capacity = capacity;
-        admin.setLobby(this);
+        DataBase.getActiveLobbies().put(admin, this);
         setTimer();
     }
 
@@ -49,7 +49,7 @@ public class Lobby {
     public synchronized void addUser(User user) {
         remainedSeconds = 300;
         users.add(user);
-        user.setLobby(this);
+        DataBase.getActiveLobbies().put(user,this);
     }
 
     private String randomName() {
@@ -73,6 +73,6 @@ public class Lobby {
 
     public synchronized void remove(User user) {
         users.remove(user);
-        user.setLobby(null);
+        DataBase.getActiveLobbies().remove(user);
     }
 }
