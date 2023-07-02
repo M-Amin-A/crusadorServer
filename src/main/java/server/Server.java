@@ -37,7 +37,6 @@ public class Server {
             DataBase.getActiveLobbies().put(user,lobby);
         }
         DataBase.getActiveLobbies().remove(lobby);
-        //todo خارج شدن از لابی بعد از قطع شدن اتصال
         //برای هر لابی todo chatroom
     }
 }

@@ -40,7 +40,7 @@ public class Connection extends Thread{
                 String input=dataInputStream.readUTF();
                 boolean terminate=inputHandler(input);
             } catch (IOException e) {
-                //todo
+                leftLobby();
                 this.interrupt();
             }
         }
@@ -97,7 +97,6 @@ public class Connection extends Thread{
         } else if (Commands.IS_LOBBY_VALID.getMatcher(input) != null) {
             isLobbyValid();
         }
-        //todo where is start game??
 
 
         //in game commands
@@ -113,6 +112,12 @@ public class Connection extends Thread{
         }
         else if((matcher=Commands.GET_MAP_BY_NAME.getMatcher(input))!=null){
             getMapByName(matcher);
+        }
+        else if(Commands.START_GAME.getMatcher(input) !=null){
+            ArrayList<String> usernames=new ArrayList<>();
+            Lobby lobby = DataBase.getActiveLobbies().get(DataBase.getUserByUsername(clientUsername));
+            for(User user1:lobby.getUsers()) usernames.add(user1.username);
+            startGame(usernames);
         }
 
         SaveAndLoad.saveData(DataBase.getUsers(), DataBase.getUsersDataBaseFilePath());
@@ -203,8 +208,7 @@ public class Connection extends Thread{
         else dataOutputStream.writeUTF("null");
         if (lobby.getCapacity() <= lobby.getUsers().size()) {
             ArrayList<String> usernames=new ArrayList<>();
-            for(User user1:lobby.getUsers())
-                usernames.add(user1.username);
+            for(User user1:lobby.getUsers()) usernames.add(user1.username);
             startGame(usernames);
         }
     }
