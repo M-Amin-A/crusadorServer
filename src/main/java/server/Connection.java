@@ -209,6 +209,7 @@ public class Connection extends Thread{
 
     private void newLobby(Matcher matcher) throws IOException {
         User user = DataBase.getUserByUsername(clientUsername);
+        System.out.println(clientUsername);
         int capacity = Integer.parseInt(matcher.group("number"));
         Lobby lobby = new Lobby(user, capacity);
         DataBase.getActiveLobbies().add(lobby);
@@ -293,8 +294,8 @@ public class Connection extends Thread{
 
     private void validateConnection(String clientUsername){
         this.clientUsername =clientUsername;
-
         DataBase.getConnections().add(this);
+        System.out.println(clientUsername);
     }
 
     public void writeOnSocket(String message) {
