@@ -37,6 +37,5 @@ public class Server {
             DataBase.getActiveLobbies().put(user,lobby);
         }
         DataBase.getActiveLobbies().remove(lobby);
-        //برای هر لابی todo chatroom
     }
 }

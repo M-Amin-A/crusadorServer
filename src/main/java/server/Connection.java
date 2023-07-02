@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 
+import static model.DataBase.setMessages;
+
 public class Connection extends Thread{
 
     private final Socket socket;
@@ -48,7 +50,6 @@ public class Connection extends Thread{
 
     private Boolean inputHandler(String input) throws IOException {
         Matcher matcher;
-
         System.out.println("received from port "+socket.getPort()+" : "+input);
         //initial commands
         if((matcher=Commands.LOGIN.getMatcher(input))!=null){
@@ -74,6 +75,18 @@ public class Connection extends Thread{
         }
         else if((matcher=Commands.CHANGE_USER_DATA.getMatcher(input))!=null){
             changeUserData(matcher);
+        }
+        else if((matcher=Commands.GET_MESSAGE.getMatcher(input))!=null){
+            getMessages();
+        }
+        else if((matcher=Commands.SET_MESSAGE.getMatcher(input))!=null){
+            setMessages(matcher);
+        }
+        else if((matcher=Commands.ADD_MESSAGE.getMatcher(input))!=null){
+            addMessage(matcher);
+        }
+        else if((matcher=Commands.CHANGE_MESSAGE_DATA.getMatcher(input))!=null){
+            //changeMessageData(matcher);
         }
 
 
@@ -295,6 +308,41 @@ public class Connection extends Thread{
         User oldUser=DataBase.getUserByUsername(newUser.getUsername());
         DataBase.getUsers().remove(oldUser);
         DataBase.getUsers().add(newUser);
+    }
+
+    private void getMessages(){
+        writeOnSocket(new Gson().toJson(DataBase.getMessages()));
+    }
+    private void addMessage(Matcher matcher){
+        String messageJson=matcher.group("messageJson");
+        Message message;
+        try {
+            message = (Message) getObjectFromJson(Message.class, messageJson);
+
+        }catch (Exception e){
+            return;
+        }
+        DataBase.addMessage(message);
+    }
+
+    /*private void setMessage(Matcher matcher){
+        String messageJson=matcher.group("messageJson");
+        Message message;
+        try {
+            message = (Message) getObjectFromJson(Message.class, messageJson);
+
+        }catch (Exception e){
+            return;
+        }
+        DataBase.setMessage(message);
+    }*/
+    private void changeMessageData(Matcher matcher){
+        String messageJson=matcher.group("messageJson");
+        Message newMessage=(Message) getObjectFromJson(Message.class,messageJson);
+
+        Message oldMessage=DataBase.getMessageByText(newMessage.getText(), newMessage.getTime(), newMessage.getName());
+        DataBase.getMessages().remove(oldMessage);
+        DataBase.getMessages().add(newMessage);
     }
 
     private void validateConnection(String clientUsername){

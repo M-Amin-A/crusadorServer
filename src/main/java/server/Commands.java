@@ -13,6 +13,11 @@ public enum Commands {
     RANK_OF_USER("RANK_OF_USER (?<username>.*)"),
     GET_USERS("GET_USERS"),
     ADD_USER("ADD_USER (?<userJson>.*)"),
+    GET_MESSAGE("GET_MESSAGE"),
+    SET_MESSAGE("SET_MESSAGE (?<messageJson>.*)"),
+    ADD_MESSAGE("ADD_MESSAGE (?<messageJson>.*)"),
+    CHANGE_MESSAGE_DATA("CHANGE_MESSAGE_DATA (?<messageJson>.*)"),
+
     CHANGE_USER_DATA("CHANGE_USER_DATA (?<userJson>.*)"),
 
     //lobby commands
